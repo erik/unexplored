@@ -13,7 +13,7 @@ POSTGRES_DSN ?= postgresql://gis:password@127.0.0.1:5432/gis
 .SUFFIXES: .fit .fit.gz .gpx
 
 .PHONY: all
-all: ingest-osm segment-roads
+all: ingest-osm segment-roads ingest-traces match-traces-to-segments
 
 ${FILE_REGION_EXPORT}:
 	curl "https://download.geofabrik.de/${REGION_NAME}" -o "${FILE_REGION_EXPORT}"
@@ -46,6 +46,10 @@ ingest-traces: $(wildcard $(TRACES_NEW_DIR)/*)
 .PHONY: segment-roads
 segment-roads: ${FILE_WAYS}
 	psql ${POSTGRES_DSN} < ./postgis/segmentize_roads.sql
+
+.PHONY: match-traces-to-segments
+match-traces-to-segments: ${FILE_WAYS}
+	psql ${POSTGRES_DSN} < ./postgis/match_trace_segments.sql
 
 .PHONY: psql-shell
 psql-shell:

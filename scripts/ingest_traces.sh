@@ -38,3 +38,5 @@ export -f ogr2ogr_import
 ls ${FROM_DIR}/*.gz | xargs -n1 -P ${MAX_PROCS} bash -c 'gunzip_file "$@"' _
 ls ${FROM_DIR}/*.fit | xargs -n1 -P ${MAX_PROCS} bash -c 'fit_to_gpx "$@"' _
 ls ${FROM_DIR}/*.gpx | xargs -n1 -P ${MAX_PROCS} bash -c 'ogr2ogr_import "$@"' _
+
+echo 'Finished.'
