@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS path_segments CASCADE;
 CREATE TABLE path_segments AS
   WITH segmentized_paths AS (
       SELECT way_id as osm_id
-            , ST_Segmentize(geom, 100) as way
+            , ST_Segmentize(geom, 500) as way
       FROM public.all_paths
       WHERE 1=1
         AND geom IS NOT NULL
