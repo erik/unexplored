@@ -27,8 +27,10 @@ ogr2ogr_import () {
     local f="$1"; shift
     echo "ogr2ogr_import: $f"
     ogr2ogr -update -append \
+            -t_srs EPSG:3857 \
             -f PostgreSQL PG:"dbname='gis' host='127.0.0.1' port='5432' user='gis' password='password'" \
-            "$f";
+            "$f" \
+            track_points
 }
 
 export -f gunzip_file
