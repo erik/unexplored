@@ -10,7 +10,7 @@ GPX_TRACES = $(wildcard $(TRACES_DIR)/*.gpx})
 
 POSTGRES_DSN ?= postgresql://gis:password@127.0.0.1:5432/gis
 
-.SUFFIXES: .fit .fit.gz .gpx
+.SUFFIXES: .fit .fit.gz .gpx .sql
 
 .PHONY: all
 all: ingest-osm segment-roads ingest-traces match-traces-to-segments
@@ -21,21 +21,21 @@ ${FILE_REGION_EXPORT}:
 ${FILE_WAYS}: ${FILE_REGION_EXPORT}
 	osmium tags-filter "${FILE_REGION_EXPORT}" \
 		--overwrite \
-		--invert-match \
-		--omit-referenced \
-		"w/bicycle=no" \
+		"wr/highway,path,bicycle,foot" \
 		-o "${FILE_WAYS}"
 
+# TODO: Add these back?
+# --tag-transform-script carto/openstreetmap-carto.lua \
+# -S carto/openstreetmap-carto.style
 .PHONY: ingest-osm
-ingest-osm: ${FILE_WAYS}
+ingest-osm: ${FILE_WAYS} carto/map-style.lua
 	osm2pgsql -d ${POSTGRES_DSN} \
 		--create \
 		--slim \
-		-G \
 		--hstore \
-		--tag-transform-script carto/openstreetmap-carto.lua \
 		--number-processes $(shell nproc) \
-		-S carto/openstreetmap-carto.style \
+		--style carto/map-style.lua \
+		--output=flex \
 		${FILE_WAYS}
 
 # FIXME: This is extremely not how Makefiles are meant to work.
@@ -44,11 +44,11 @@ ingest-traces: $(wildcard $(TRACES_NEW_DIR)/*)
 	scripts/ingest_traces.sh $(TRACES_NEW_DIR) $(TRACES_IMPORT_DIR)
 
 .PHONY: segment-roads
-segment-roads: ${FILE_WAYS}
+segment-roads: ${FILE_WAYS} ./postgis/segmentize_roads.sql
 	psql ${POSTGRES_DSN} < ./postgis/segmentize_roads.sql
 
 .PHONY: match-traces-to-segments
-match-traces-to-segments: ${FILE_WAYS}
+match-traces-to-segments: ${FILE_WAYS} ./postgis/match_trace_segments.sql
 	psql ${POSTGRES_DSN} < ./postgis/match_trace_segments.sql
 
 .PHONY: psql-shell

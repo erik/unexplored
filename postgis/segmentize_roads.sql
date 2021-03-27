@@ -1,13 +1,21 @@
 BEGIN;
 
-DROP TABLE IF EXISTS path_segments;
+DROP TABLE IF EXISTS path_segments CASCADE;
 
 CREATE TABLE path_segments AS
   WITH segmentized_paths AS (
-      SELECT osm_id
-            , ST_Segmentize(way, 100) as way
-      FROM public.planet_osm_roads
-      WHERE way IS NOT NULL
+      SELECT way_id as osm_id
+            , ST_Segmentize(geom, 100) as way
+      FROM public.all_paths
+      WHERE 1=1
+        AND geom IS NOT NULL
+        -- AND COALESCE(access, '') NOT IN ('no', 'private')
+        AND COALESCE(bicycle, '') NOT IN ('no', 'private')
+        AND (
+             highway IS NOT NULL
+          OR bicycle IS NOT NULL
+          OR foot IS NOT NULL
+        )
   ), series_by_path AS (
       SELECT osm_id, generate_series(1, ST_NPoints(way)) as n
       FROM segmentized_paths

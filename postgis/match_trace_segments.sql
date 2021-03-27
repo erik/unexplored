@@ -33,4 +33,17 @@ CREATE TABLE path_segment_traces AS
   FROM closest_segment_by_trace_point
   GROUP BY 1;
 
+CREATE OR REPLACE VIEW path_segments_traces_view AS
+  SELECT path_segments.id as id, osm_id, way
+  FROM path_segments
+  INNER JOIN path_segment_traces ON (path_segment_id = path_segments.id)
+  WHERE num_hits >= 1;
+
+CREATE OR REPLACE VIEW path_segments_traces_negation_view AS
+  SELECT path_segments.id as id, osm_id, way
+  FROM path_segments
+  LEFT JOIN path_segment_traces ON (path_segment_id = path_segments.id)
+  WHERE path_segment_traces IS NULL;
+
+
 COMMIT;
