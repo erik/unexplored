@@ -1,0 +1,6 @@
+plugins:
+  - kosmtik-overlay
+  - kosmtik-map-compare
+  - kosmtik-osm-data-overlay
+  - kosmtik-mapnik-reference
+  - kosmtik-geojson-overlay

@@ -9,6 +9,19 @@ services:
       - POSTGRES_PASSWORD=password
     ports:
       - '5432:5432'
+
+  kosmtik:
+    build:
+      context: .
+      dockerfile: Dockerfile.kosmtik
+    volumes:
+      - .:/openstreetmap-carto
+    ports:
+      - "127.0.0.1:6789:6789"
+    environment:
+      - PGHOST=postgis
+      - PGUSER=postgres
+
   mapnik:
     build: .
 volumes:
