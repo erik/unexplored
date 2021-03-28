@@ -12,13 +12,16 @@ table_all_paths = osm2pgsql.define_way_table(
 })
 
 function osm2pgsql.process_way(object)
+   -- TODO: Clean this up
    local should_ignore = (
       object.tags.highway == nil or
       object.tags.highway == 'motorway' or
+      object.tags.highway == 'motorway_link' or
       object.tags.footway == 'sidewalk' or
       object.tags.access == 'no' or
       object.tags.access == 'private' or
-      object.tags.bicycle == 'no'
+      object.tags.bicycle == 'no' or
+      object.tags.service == 'parking_aisle'
    )
    if should_ignore then
       return
