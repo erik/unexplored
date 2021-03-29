@@ -1,4 +1,0 @@
-FROM postgis/postgis:12-3.1-alpine
-
-COPY ./postgis/10_init_db.sql /docker-entrypoint-initdb.d/
-COPY ./postgis/20_create_gps_traces.sql /docker-entrypoint-initdb.d/

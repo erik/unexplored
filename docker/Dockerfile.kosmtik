@@ -18,12 +18,10 @@ RUN kosmtik plugins --install kosmtik-overpass-layer \
                     --install kosmtik-map-compare \
                     --install kosmtik-osm-data-overlay \
                     --install kosmtik-mapnik-reference \
-                    --install kosmtik-geojson-overlay \
-    && cp /root/.config/kosmtik.yml /tmp/.kosmtik-config.yml
+                    --install kosmtik-geojson-overlay
 
-# Closing section
-RUN mkdir -p /openstreetmap-carto
-WORKDIR /openstreetmap-carto
+RUN mkdir -p /kosmtik
+WORKDIR /kosmtik
 
 USER 1000
 CMD sh kosmtik/init.sh

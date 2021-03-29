@@ -1,14 +1,10 @@
 #!/bin/bash
 #
 # Run trace conversion / ingest in parallel to speed everything up.
-#
-# TODO: move files into ${TO_DIR} when done processing
 
 set -ex
 
 FROM_DIR="$1"; shift
-TO_DIR="$1"; shift
-
 MAX_PROCS=$(nproc)
 
 gunzip_file () {

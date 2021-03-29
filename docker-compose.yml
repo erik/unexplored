@@ -1,9 +1,9 @@
 version: '3.9'
 services:
   postgis:
-    build:
-      context: .
-      dockerfile: Dockerfile.postgis
+    image: postgis/postgis:12-3.1-alpine
+    volumes:
+      - ./sql/schema:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_USER=gis
       - POSTGRES_PASSWORD=password
@@ -13,9 +13,9 @@ services:
   kosmtik:
     build:
       context: .
-      dockerfile: Dockerfile.kosmtik
+      dockerfile: docker/Dockerfile.kosmtik
     volumes:
-      - .:/openstreetmap-carto
+      - .:/kosmtik
     ports:
       - "127.0.0.1:6789:6789"
     environment:
@@ -23,6 +23,8 @@ services:
       - PGUSER=postgres
 
   mapnik:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mapnik
 volumes:
   pg_data: {}
