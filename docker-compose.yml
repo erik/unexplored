@@ -2,6 +2,8 @@ version: '3.9'
 services:
   postgis:
     image: postgis/postgis:12-3.1-alpine
+    # Kosmtik/Mapnik need a much larger shared memory buffer.
+    shm_size: 1g
     volumes:
       - pg_data:/var/lib/postgresql/data
       # Note: doing this per-file so we don't lose the 10_something.sql file
