@@ -2,8 +2,12 @@
 -- user / database for us.
 
 -- Create user dedicated to Mapnik
-CREATE USER mapnik_renderer;
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO mapnik_renderer;
+CREATE USER mapnik_renderer WITH PASSWORD 'todo';
+
+-- Since we don't have the tables / views created yet, grant perms
+-- ahead of time.
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+      GRANT SELECT ON ALL TABLES TO mapnik_renderer;
 
 -- hstore extension is used by osm2pgsql
 CREATE EXTENSION IF NOT EXISTS hstore;
