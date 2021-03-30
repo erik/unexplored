@@ -9,13 +9,6 @@ CREATE TABLE path_segments AS
       FROM public.all_paths
       WHERE 1=1
         AND geom IS NOT NULL
-        -- AND COALESCE(access, '') NOT IN ('no', 'private')
-        AND COALESCE(bicycle, '') NOT IN ('no', 'private')
-        AND (
-             highway IS NOT NULL
-          OR bicycle IS NOT NULL
-          OR foot IS NOT NULL
-        )
   ), series_by_path AS (
       SELECT osm_id, generate_series(1, ST_NPoints(way)) as n
       FROM segmentized_paths

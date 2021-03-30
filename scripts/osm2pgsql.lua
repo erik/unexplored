@@ -1,10 +1,16 @@
+-- Using the flex output of osm2pgsql to create a custom table
+-- https://osm2pgsql.org/doc/manual.html#the-flex-output
+
 table_all_paths = osm2pgsql.define_way_table(
    'all_paths', {
       { column = 'name', type = 'text' },
       { column = 'geom', type = 'linestring' },
       { column = 'tags', type = 'hstore' },
 
-      { column = 'access', type = 'text' },
+      -- TODO: Populate these
+      { column = 'z_order', type = 'integer' },
+      { column = 'surface', type = 'text' },
+
       { column = 'path', type = 'text' },
       { column = 'foot', type = 'text' },
       { column = 'bicycle', type = 'text' },

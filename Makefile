@@ -32,7 +32,7 @@ ingest-osm: ${FILE_WAYS} carto/map-style.lua
 		--slim \
 		--hstore \
 		--number-processes $(shell nproc) \
-		--style carto/map-style.lua \
+		--style scripts/osm2pgsql.lua \
 		--output=flex \
 		${FILE_WAYS}
 
