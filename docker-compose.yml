@@ -3,10 +3,14 @@ services:
   postgis:
     image: postgis/postgis:12-3.1-alpine
     volumes:
-      - ./sql/schema:/docker-entrypoint-initdb.d
+      - pg_data:/var/lib/postgresql/data
+      # Note: doing this per-file so we don't lose the 10_something.sql file
+      # postgis/postgis sets up.
+      - ./sql/schema/20_init_database.sql:/docker-entrypoint-initdb.d/20_init_database.sql
     environment:
-      - POSTGRES_USER=gis
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=postgis_admin
+      - POSTGRES_PASSWORD=some-secret-password-here
+      - POSTGRES_DB=postgis
     ports:
       - '5432:5432'
 
@@ -20,11 +24,12 @@ services:
       - "127.0.0.1:6789:6789"
     environment:
       - PGHOST=postgis
-      - PGUSER=postgres
+      - PGUSER=mapnik_renderer
 
   mapnik:
     build:
       context: .
       dockerfile: docker/Dockerfile.mapnik
+
 volumes:
   pg_data: {}

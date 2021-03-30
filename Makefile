@@ -4,7 +4,12 @@ FILE_WAYS := data/ways.osm.pbf
 
 GPS_TRACES_SRC_DIR ?= data/traces
 
-POSTGRES_DSN ?= postgresql://gis:password@127.0.0.1:5432/gis
+export PG_USER ?= postgis_admin
+export PG_PASS ?= some-secret-password-here
+export PG_HOST ?= localhost
+export PG_PORT ?= 5432
+export PG_DB   ?= postgis
+export PG_URL  ?= postgresql://${PG_USER}:${PG_PASS}@${PG_HOST}:${PG_PORT}/${PG_DB}
 
 .SUFFIXES: .sql
 
@@ -22,7 +27,7 @@ ${FILE_WAYS}: ${FILE_REGION_EXPORT}
 
 .PHONY: ingest-osm
 ingest-osm: ${FILE_WAYS} carto/map-style.lua
-	osm2pgsql -d ${POSTGRES_DSN} \
+	osm2pgsql -d ${PG_URL} \
 		--create \
 		--slim \
 		--hstore \
@@ -38,12 +43,12 @@ ingest-traces: $(wildcard ${GPS_TRACES_SRC_DIR}/*)
 
 .PHONY: segment-roads
 segment-roads: ${FILE_WAYS} ./sql/segmentize_roads.sql
-	psql ${POSTGRES_DSN} < ./sql/segmentize_roads.sql
+	psql ${PG_URL} < ./sql/segmentize_roads.sql
 
 .PHONY: match-traces-to-segments
 match-traces-to-segments: ${FILE_WAYS} ./sql/match_trace_segments.sql
-	psql ${POSTGRES_DSN} < ./sql/match_trace_segments.sql
+	psql ${PG_URL} < ./sql/match_trace_segments.sql
 
 .PHONY: psql-shell
 psql-shell:
-	psql ${POSTGRES_DSN}
+	psql ${PG_URL}

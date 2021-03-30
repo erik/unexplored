@@ -2,21 +2,37 @@
 #
 # Run trace conversion / ingest in parallel to speed everything up.
 
-set -ex
+set -e
 
 FROM_DIR="$1"; shift
 MAX_PROCS=$(nproc)
 
+# Export this so it's available in sub-shells
+export PG_CONN="dbname='${PG_DB}' \
+         host='${PG_HOST}' \
+         port='${PG_PORT}' \
+         user='${PG_USER}' \
+         password='${PG_PASS}'"
+
 gunzip_file () {
-    local f="$1"; shift
-    echo "gunzip_file: $f"
-    gunzip < "$f" > "$(dirname $f)/$(basename -s .gz $f)"
+    local src="$1"; shift
+    local dst="$(dirname $src)/$(basename -s .gz $src)"
+    if [ -f "$dst" ]; then
+        return
+    fi
+    echo "gunzip_file: $src"
+    gunzip "$src"
 }
 
 fit_to_gpx () {
-    local f="$1"; shift
-    echo "fit_to_gpx: $f"
-    gpsbabel -i garmin_fit -f "$f" -o gpx -F "$f.gpx"
+    local src="$1"; shift
+    local dst="$src.gpx"
+    if [ -f "$dst" ]; then
+        return
+    fi
+
+    echo "fit_to_gpx: $src"
+    gpsbabel -i garmin_fit -f "$src" -o gpx -F "$dst"
 }
 
 ogr2ogr_import () {
@@ -24,7 +40,7 @@ ogr2ogr_import () {
     echo "ogr2ogr_import: $f"
     ogr2ogr -update -append \
             -t_srs EPSG:3857 \
-            -f PostgreSQL PG:"dbname='gis' host='127.0.0.1' port='5432' user='gis' password='password'" \
+            -f PostgreSQL "PG:${PG_CONN}" \
             "$f" \
             track_points
 }
