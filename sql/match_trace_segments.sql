@@ -36,8 +36,8 @@ CREATE OR REPLACE VIEW path_segments_traces_view AS
       path_segments.id as path_segment_id,
       osm_id,
       way,
-      num_hits,
+      COALESCE(num_hits, 0) as num_hits,
       z_order,
       surface_paved
   FROM path_segments
-  INNER JOIN path_segment_traces ON (path_segment_id = path_segments.id)
+  LEFT JOIN path_segment_traces ON (path_segment_id = path_segments.id);

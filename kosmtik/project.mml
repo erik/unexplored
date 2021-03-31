@@ -46,10 +46,12 @@ Layer:
       table: |-
         (
             SELECT way
-            FROM path_segments_traces_negation_view
+            FROM path_segments_traces_view
+            WHERE num_hits = 0
          ) as untraversed_paths
     properties:
-      cache-features: false
+      cache-features: true
+      minzoom: 13
 
   - id: traversed-paths
     geometry: linestring
@@ -60,6 +62,24 @@ Layer:
         (
             SELECT way
             FROM path_segments_traces_view
+            WHERE num_hits >= 1
          ) as traversed_paths
     properties:
-      cache-features: false
+      cache-features: true
+      minzoom: 11
+
+  - id: traversed-paths
+    geometry: linestring
+    <<: *extents
+    Datasource:
+      <<: *osm2pgsql
+      table: |-
+        (
+            SELECT way
+            FROM path_segments_traces_view
+            WHERE num_hits >= 1 AND z_order > 5
+         ) as traversed_paths
+    properties:
+      cache-features: true
+      minzoom: 1
+      maxzoom: 11
