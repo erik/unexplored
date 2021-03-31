@@ -4,23 +4,27 @@ DROP TABLE IF EXISTS path_segments CASCADE;
 
 CREATE TABLE path_segments AS
   WITH segmentized_paths AS (
-      SELECT way_id as osm_id
-            , ST_Segmentize(geom, 500) as way
+      SELECT
+        way_id as osm_id,
+        ST_Segmentize(geom, 500) as way,
+        z_order,
+        surface_paved
       FROM public.all_paths
-      WHERE 1=1
-        AND geom IS NOT NULL
+      WHERE geom IS NOT NULL
   ), series_by_path AS (
-      SELECT osm_id, generate_series(1, ST_NPoints(way)) as n
+      SELECT osm_id, generate_series(1, ST_NPoints(way)-1) as n
       FROM segmentized_paths
   )
-  SELECT osm_id
-       , ST_MakeLine(ST_PointN(way, n), ST_PointN(way, n+1)) as way
+  SELECT
+    osm_id,
+    z_order,
+    surface_paved,
+    ST_MakeLine(
+      ST_PointN(way, n),
+      ST_PointN(way, n+1)
+    ) as way
   FROM series_by_path
-  INNER JOIN segmentized_paths USING (osm_id)
-  -- FIXME: Why are we getting nulls here?
-  WHERE ST_PointN(way, n) IS NOT NULL
-    AND ST_PointN(way, n+1) IS NOT NULL
-  ;
+  INNER JOIN segmentized_paths USING (osm_id);
 
 -- TODO: Can we do this as part of the CREATE TABLE AS?
 ALTER TABLE path_segments ADD COLUMN id SERIAL;
