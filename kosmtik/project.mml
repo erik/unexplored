@@ -27,15 +27,15 @@ _parts:
 
   osm2pgsql: &osm2pgsql
     type: "postgis"
-    dbname: "gis"
-    user: "gis"
-    password: "password"
+    dbname: "postgis"
+    user: "mapnik_renderer"
+    password: "todo"
     key_field: ""
     geometry_field: "way"
     extent: "-20037508,-20037508,20037508,20037508"
 
 Stylesheet:
-  - ../carto/style/style.mss
+  - ../carto/style.mss
 
 Layer:
   - id: untraversed-paths

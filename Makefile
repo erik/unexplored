@@ -26,7 +26,7 @@ ${FILE_WAYS}: ${FILE_REGION_EXPORT}
 		-o "${FILE_WAYS}"
 
 .PHONY: ingest-osm
-ingest-osm: ${FILE_WAYS} carto/map-style.lua
+ingest-osm: ${FILE_WAYS} scripts/osm2pgsql.lua
 	osm2pgsql -d ${PG_URL} \
 		--create \
 		--slim \
