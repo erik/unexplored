@@ -11,7 +11,7 @@ included_way_tags = {
 
 -- Filter these out. Takes precedence over included_way_tags
 excluded_way_tags = {
-   highway = { 'motorway', 'motorway_link' },
+   highway = { 'motorway', 'motorway_link', 'ferry' },
    footway = { 'sidewalk' },
    access  = { 'no', 'private' },
    bicycle = { 'no' },
