@@ -1,5 +1,6 @@
 @traversed-color: #264653;
 @untraversed-color: #e76f51;
+@unmapped-color: #FFD505;
 
 #traversed-paths {
     background/line-color: @traversed-color;
@@ -18,4 +19,11 @@
     [zoom >= 16] {
         line-width: 4;
     }
+}
+
+#unmapped-points {
+    marker-fill: @unmapped-color;
+    marker-width: 5;
+    marker-height: 5;
+    marker-type: ellipse;
 }

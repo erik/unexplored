@@ -19,10 +19,17 @@ CREATE TABLE path_segments AS
     osm_id,
     z_order,
     surface_paved,
+    ST_Buffer(
+        ST_MakeLine(
+            ST_PointN(way, n),
+            ST_PointN(way, n+1)
+        ),
+        20
+    ) as buffered_geom,
     ST_MakeLine(
       ST_PointN(way, n),
       ST_PointN(way, n+1)
-    ) as way
+    ) as geom
   FROM series_by_path
   INNER JOIN segmentized_paths USING (osm_id);
 
@@ -30,10 +37,15 @@ CREATE TABLE path_segments AS
 ALTER TABLE path_segments ADD COLUMN id SERIAL;
 ALTER TABLE path_segments ADD PRIMARY KEY (id);
 ALTER TABLE path_segments ALTER COLUMN osm_id SET NOT NULL;
-ALTER TABLE path_segments ALTER COLUMN way SET NOT NULL;
+ALTER TABLE path_segments ALTER COLUMN geom SET NOT NULL;
 
 -- TODO: Should benchmark this, theoretically SP-GiST is better than
 -- GiST at overlapping data (such as roads?)
-CREATE INDEX path_segments_way_idx ON path_segments USING SPGIST (way);
+CREATE INDEX path_segments_geom_idx
+       ON path_segments
+       USING SPGIST (geom);
+CREATE INDEX path_segments_buffered_geom_idx
+       ON path_segments
+       USING SPGIST (buffered_geom);
 
 COMMIT;
