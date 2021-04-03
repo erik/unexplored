@@ -14,10 +14,10 @@ All of the heavy lifting is outsourced to some core parts of the OpenStreetMap
 software stack:
 
 1. `osmium` for filtering a OSM PBF export
-2. `gpsbabel` for converting FIT files into GPS
+2. `gpsbabel` for converting FIT files into GPX
 3. `postgis` for geospatial storage + querying
 4. `osm2pgsql` to ingest OSM data into `postgis`
-5.  `ogr2ogr` / `gdal` to ingest GPS traces into `postgis`
+5.  `ogr2ogr` / `gdal` to ingest GPX files into `postgis`
 6. `carto` / `kosmtik` for map styling
 7. `mapnik` to render tiles
 
@@ -37,7 +37,7 @@ as provided by a tool like [GraphHopper] or [OSRM].
 mkdir -p data/
 
 # Any file ending in [.fit, .fit.gz, .gpx, .gpx.gz] will be processed.
-cp -R YOUR-GPS-TRACES-DIR/ data/
+cp -R YOUR-GPS-TRACES-DIR/ data/traces/
 
 # Bring up our database
 docker-compose up postgis -d
