@@ -17,6 +17,7 @@ export PG_URL  ?= postgresql://${PG_USER}:${PG_PASS}@${PG_HOST}:${PG_PORT}/${PG_
 all: ingest-osm segment-roads ingest-traces match-traces-to-segments
 
 ${FILE_REGION_EXPORT}:
+	mkdir -p $(dir ${FILE_REGION_EXPORT})
 	curl "https://download.geofabrik.de/${REGION_NAME}" -o "${FILE_REGION_EXPORT}"
 
 ${FILE_WAYS}: ${FILE_REGION_EXPORT}
