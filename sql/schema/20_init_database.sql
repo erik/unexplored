@@ -11,3 +11,9 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 
 -- hstore extension is used by osm2pgsql
 CREATE EXTENSION IF NOT EXISTS hstore;
+
+-- Keep track of imported traces to speed up reruns / allow for
+-- incremental uploads.
+CREATE TABLE IF NOT EXISTS trace_files (
+       file_name TEXT PRIMARY KEY
+);
