@@ -1,1 +1,33 @@
-FROM overv/openstreetmap-tile-server
+FROM ubuntu:20.04
+
+# Basic dependencies
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+    libboost-all-dev git tar unzip wget bzip2 build-essential autoconf \
+    libtool libxml2-dev libgeos-dev libgeos++-dev libpq-dev libbz2-dev \
+    libproj-dev munin-node munin protobuf-c-compiler libfreetype6-dev \
+    libtiff5-dev libicu-dev libgdal-dev libcairo2-dev \
+    libcairomm-1.0-dev apache2 apache2-dev libagg-dev liblua5.2-dev \
+    ttf-unifont lua5.1 postgresql postgresql-contrib wget
+
+# mapnik dependencies
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+    autoconf apache2-dev libtool libxml2-dev libbz2-dev libgeos-dev \
+    libgeos++-dev libproj-dev gdal-bin libmapnik-dev mapnik-utils \
+    python3-mapnik python3-psycopg2
+
+RUN apt-get install libiniparser-dev -yq
+
+# Grab mod_tile source and build
+RUN mkdir /tmp/mod_tile && \
+    git clone --depth=1 git://github.com/openstreetmap/mod_tile.git && \
+    cd mod_tile && \
+    ./autogen.sh && ./configure && make && make install install-mod_tile && \
+    ldconfig
+
+# mod_tile dependencies
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+    npm && npm install -g carto
+
+
+# TODO: carto project.mml > mapnik.xml
